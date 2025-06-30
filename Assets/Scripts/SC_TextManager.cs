@@ -45,6 +45,10 @@ public class SC_TextManager : MonoBehaviour
 	private const string SCENE_TAG = "scene";
 	private SC_SceneManager g_sceneManager;
 
+	[Header("Inventory")]
+	private const string INVENTORY_TAG = "inventory";
+	private SC_Inventory g_inventory;
+
 
 
 	private void Awake()
@@ -63,6 +67,8 @@ public class SC_TextManager : MonoBehaviour
 		g_sceneManager = FindObjectOfType<SC_SceneManager>();
 
 		g_playerSetObject = FindObjectOfType<SC_PlayerSet>();
+
+		g_inventory = FindObjectOfType<SC_Inventory>();
 
 		g_currentStory = new Story(g_inkJSON.text);
 		ContinueStory();
@@ -171,6 +177,15 @@ public class SC_TextManager : MonoBehaviour
 					return;
 				}
 			}
+			else if (tagKey == INVENTORY_TAG)
+			{
+				Debug.Log(tagValue);
+				if (tagValue == "NON")
+				{
+					Debug.LogError(tagValue + " ink variable has no value");
+					return;
+				}
+			}
 
 			// handle the tag
 			switch (tagKey)
@@ -201,6 +216,11 @@ public class SC_TextManager : MonoBehaviour
 					Debug.Log("Restart scene");
 
 					g_sceneManager.RestartStory();
+					break;
+				case INVENTORY_TAG:
+					Debug.Log("Inventory system");
+
+					g_inventory.ItemToUI(tagValue);
 					break;
 				default:
 					Debug.LogWarning("Tag came in but is not currently being handled: " + tag);

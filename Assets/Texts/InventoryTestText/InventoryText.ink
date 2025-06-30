@@ -18,7 +18,7 @@ CHOOSE YOUR MAIN WEAPON
 
 
 === secondary_weapon ===
-CHOOSE YOUR SECONDARY WEAPON
+CHOOSE YOUR SECONDARY WEAPON #inventory:{weapon_main}
 *Dagger
     ~weapon_secondary = "Dagger"
 *Throwing Knives
@@ -29,7 +29,7 @@ CHOOSE YOUR SECONDARY WEAPON
 - ->ready_check
 
 === ready_check ===
-Are you ready?
+Are you ready? #inventory:{weapon_secondary}
 *Yes
 *No #scene:restart
 
