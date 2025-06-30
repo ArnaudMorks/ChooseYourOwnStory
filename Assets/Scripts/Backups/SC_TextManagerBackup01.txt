@@ -1,0 +1,185 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using Ink.Runtime;
+using UnityEngine.EventSystems;
+
+public class SC_TextManager : MonoBehaviour
+{
+	[Header("Text UI")]
+	[SerializeField] private TextMeshProUGUI storyText;
+
+	[SerializeField] private Story currentStory;
+
+	[SerializeField] private TextAsset inkJSON;
+
+	private static SC_TextManager instance;
+
+	[SerializeField] private GameObject continueButton;
+
+	[Header("Choices UI")]
+	[SerializeField] private GameObject[] choices;
+	private TextMeshProUGUI[] choicesText;
+
+	[Header("Image")]
+	private const string IMAGE_TAG = "image";
+	//private const string CURRENT_IMAGE_TAG = "current_image";
+	[SerializeField] private ImagesEnum currentImageEnum;
+	[SerializeField] private ImagesEnum firstImageEnum;
+	[SerializeField] private ImagesEnum lastImageEnum;
+	private SC_Images imageObject;
+
+
+	private void Awake()
+	{
+		if (instance != null)
+			Debug.LogWarning("Found more than one Text Manager in the scene");
+		instance = this;
+	}
+
+
+	private void Start()
+	{
+		imageObject = FindObjectOfType<SC_Images>();
+
+		currentStory = new Story(inkJSON.text);
+		ContinueStory();
+		Debug.Log(currentStory);
+
+		//get all of the choices text
+		choicesText = new TextMeshProUGUI[choices.Length];
+		int i = 0;
+		foreach (GameObject choice in choices)
+		{
+			choicesText[i] = choice.GetComponentInChildren<TextMeshProUGUI>();
+			i++;
+		}
+	}
+
+
+
+	public void ContinueStory()
+	{
+		if (currentStory.canContinue)
+		{
+			// set text for the current dialogue line
+			storyText.text = currentStory.Continue();
+			// display choices, if any, for this dialogue line
+			continueButton.SetActive(true);
+			DisplayChoises();
+			// handle tags
+			HandleTags(currentStory.currentTags);
+		}
+	}
+
+	private void HandleTags(List<string> currentTags)
+	{
+		foreach (string tag in currentTags)
+		{
+			// parse the tag
+			string[] splitTag = tag.Split(':');
+			if (splitTag.Length != 2)
+				Debug.LogError("Tag could not be appropriately parsed: " + tag);
+			string tagKey = splitTag[0].Trim();		//Trim haalt whitespace weg
+			string tagValue = splitTag[1].Trim();
+
+			int i = 0;
+			currentImageEnum = firstImageEnum;
+			while (currentImageEnum.ToString() != tagValue && i < (int)lastImageEnum)
+			{
+				/*if ((int)currentImageEnum > (int)lastImageEnum)
+				{
+					Debug.LogError("Image does not exist in enum");
+					return;
+				}*/
+				//Debug.Log(currentImageEnum);
+				currentImageEnum++;
+				i++;
+			}
+
+			if (tagValue == currentImageEnum.ToString())
+			{
+				Debug.Log(tagValue + " is same as " + currentImageEnum.ToString());
+			}
+			else
+			{
+				Debug.LogError("Image does not exist in enum");
+				return;
+			}
+
+			// handle the tag
+			switch (tagKey)
+			{
+				case IMAGE_TAG:
+					Debug.Log("image=" + tagValue);
+
+					imageObject.SwitchImage((int)currentImageEnum);
+					break;
+				/*case CURRENT_IMAGE_TAG:
+					Debug.Log("current image=" + tagValue);
+					break;*/
+				default:
+					Debug.LogWarning("Tag came in but is not currently being handled: " + tag);
+					break;
+			}
+
+		}
+
+	}
+
+
+	private void DisplayChoises()
+	{
+		List<Choice> currentChoicesList = currentStory.currentChoices;
+
+		if (currentChoicesList.Count == 0)
+		{
+			for (int j = 0; j < choices.Length; j++)
+			{
+				choices[j].gameObject.SetActive(false);
+			}
+			return;
+		}
+		continueButton.SetActive(false);
+
+		// defensive check to make sure UI can support the number of choices coming in.
+			if (currentChoicesList.Count > choices.Length)
+		{
+			Debug.Log("More choices were given than the UI can support. Number of choices given: " + currentChoicesList.Count);
+		}
+
+
+		// enable and initialize the choices up to the amount of choices for this line of dialogue
+		int i = 0;
+		foreach (Choice choice in currentChoicesList)
+		{
+			choices[i].gameObject.SetActive(true);
+			choicesText[i].text = choice.text;
+			i++;
+		}
+		DisableChoices(i);
+
+	}
+
+	private void DisableChoices(int i)
+	{
+
+		// go through the remaining choices the UI supports and make sure they're hidden
+		for (int j = i; j < choices.Length; j++)
+		{
+			choices[i].gameObject.SetActive(false);
+			Debug.Log("Choice display disabled " + i);
+		}
+	}
+
+
+
+	public void MakeChoice(int choice)
+	{
+		currentStory.ChooseChoiceIndex(choice);
+		ContinueStory();
+	}
+
+
+}
