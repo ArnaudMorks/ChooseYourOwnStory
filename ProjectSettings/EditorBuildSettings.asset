@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/InventoryTest.unity
+    guid: 6718fbd2944e58b4c8d959a6410cbc6e
+  - enabled: 0
     path: Assets/Scenes/TransformativeNarrativeSeminarScene.unity
     guid: a63dbd3864ad853469e4e23575c069d6
   - enabled: 0

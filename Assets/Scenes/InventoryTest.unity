@@ -8910,7 +8910,7 @@ MonoBehaviour:
   g_playerSwitchTwo: {fileID: 0}
   g_switchScreenOn: 0
   g_inventoryScript: {fileID: 1095368852}
-  g_inventoryOpen: 1
+  g_inventoryOpen: 0
   g_inventoryUIGroup: {fileID: 1860964931}
 --- !u!1 &1760520392
 GameObject:
