@@ -6,6 +6,8 @@ using Ink.Runtime;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+//Manages the "ink" story; makes it visable and interactible
+//Calls fucntions in others scripts when a tag (#) has been made in the "ink" story
 public class SC_TextManager : MonoBehaviour
 {
 	[Header("Text UI")]
@@ -226,7 +228,6 @@ public class SC_TextManager : MonoBehaviour
 					Debug.LogWarning("Tag came in but is not currently being handled: " + tag);
 					break;
 			}
-
 		}
 
 	}

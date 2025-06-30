@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Manages simple player inputs/events
 public class SC_PlayerSet : MonoBehaviour
 {
 	[SerializeField] private Camera g_mainCamera;
